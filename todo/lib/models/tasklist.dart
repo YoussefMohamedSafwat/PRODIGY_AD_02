@@ -6,7 +6,7 @@ class TodoItem {
 }
 
 List<TodoItem> tasklist = [
+  TodoItem(text: "eat breakfast"),
   TodoItem(text: "go to gym"),
-  TodoItem(text: "play elden ring"),
   TodoItem(text: "Go to sleep", isDone: true),
 ];

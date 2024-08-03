@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:todo/Screens/Home/widgets/search_bar.dart';
 import 'package:todo/Screens/Home/widgets/task.dart';
-import 'package:todo/models/database.dart';
 import 'package:todo/models/tasklist.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,25 +11,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final Database db = Database();
-
   final _todoController = TextEditingController();
-  List _foundtodo = [];
+  List _foundtodo = tasklist;
   @override
   Widget build(BuildContext context) {
     void removeTask(String text) {
       setState(() {
-        db.todolist.removeWhere((item) => item.text == text);
+        tasklist.removeWhere((item) => item.text == text);
       });
     }
 
     void addTask(String text) {
-      if (text != "") {
+      if (text != "" && !tasklist.any((item) => item.text == text)) {
         setState(() {
-          db.todolist.add(TodoItem(text: text));
+          tasklist.add(TodoItem(text: text));
         });
         _todoController.clear();
-        db.updateDatabase();
       }
     }
 
@@ -39,9 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
     void _runFilter(String enteredKeyword) {
       List results = [];
       if (enteredKeyword.isEmpty) {
-        results = db.todolist;
+        results = tasklist;
       } else {
-        results = db.todolist
+        results = tasklist
             .where((item) =>
                 item.text.toLowerCase().contains(enteredKeyword.toLowerCase()))
             .toList();
@@ -56,15 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         todo.isDone = !todo.isDone;
       });
-    }
-
-    @override
-    void initState() {
-      db.loadData;
-      print("Data inside database : ${db.todolist}");
-
-      _foundtodo = db.todolist;
-      super.initState();
     }
 
     final size = MediaQuery.of(context).size;
